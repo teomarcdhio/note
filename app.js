@@ -1,12 +1,35 @@
-console.log('Starting app');
-
 const fs = require('fs');
 const notes = require('./note.js');
 const os = require('os');
 const _ = require('lodash');
 const yargs = require('yargs');
 
-const argv = yargs.argv;
+var titleOptions = {
+  describe: 'Title of the note',
+  demand: true,
+  alias: 't'
+};
+
+var bodyOptions = {
+  describe: 'Body content',
+  demand: true,
+  alias: 'b'
+};
+
+const argv = yargs
+.command('add', 'Add a new note', {
+  title: titleOptions,
+  body: bodyOptions
+})
+.command('read', 'Read a note', {
+  title: titleOptions,
+})
+.command('list', 'Show all notes')
+.command('delete', 'Delete note', {
+  title: titleOptions
+})
+.help()
+.argv;
 var command = argv._[0];
 //console.log('Yargs:', argv);
 //console.log('Command: ', command );
@@ -16,17 +39,29 @@ if ( command === 'add' ) {
   var note = notes.addNote(argv.title, argv.body);
   if(note){
     console.log('note created');
-    console.log('--');
-    console.log(`Title: ${note.title}`);
+    notes.logNote(note);
   }else{
     console.log('cannot create duplicate note');
   };
 } else if ( command === 'list') {
-  notes.getAll();
+  var allNotes = notes.getAll();
+  console.log(`Printing ${allNotes.length} notes.`);
+  allNotes.forEach((note) => {
+    notes.logNote(note);
+  });
 } else if ( command === 'read') {
-  notes.getNote(argv.title);
+  var note = notes.getNote(argv.title);
+  if(note){
+    console.log('note read');
+    notes.logNote(note);
+  }else{
+    console.log('cannot find note');
+  };
+
 } else if ( command === 'delete') {
-  notes.deleteNote(argv.title);
+  var noteRemoved = notes.deleteNote(argv.title);
+  var message = noteRemoved ? 'note was removed' : 'note not found';
+  console.log(message);
 } else {
   console.log('command not recognized');
 };

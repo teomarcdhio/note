@@ -1,4 +1,3 @@
-console.log('starting note.js');
 
 //Playing wiht export module
 //module.exports.age = 25;
@@ -21,8 +20,6 @@ var fetchNotes = () => {
     return JSON.parse( notesString );
   } catch (e) {
     return [];
-  } finally {
-    console.log('finally');
   };
 };
 
@@ -53,26 +50,37 @@ if(noteDuplicate.length === 0){
 };
 
 var getAll = () => {
-  console.log('retrieveing all the notes');
+  return fetchNotes();
 };
 
 var getNote = (title) => {
-  console.log('retrieving', title);
+  var notes = fetchNotes();
+  var noteRead = notes.filter((note) => {
+    return note.title === title;
+  });
+    return noteRead[0];
 };
 
 var deleteNote = (title) => {
   var notes = fetchNotes();
-
-  console.log(notes);
   var noteDuplicate = notes.filter((note) => {
     return note.title !== title;
   });
   saveNotes(noteDuplicate);
+  return notes.length !== noteDuplicate.length;
+};
+
+var logNote = (note) => {
+  debugger;
+  console.log('--');
+  console.log(`Title: ${note.title}`);
+  console.log(`Title: ${note.body}`);
 };
 
 module.exports =  {
   addNote: addNote,
   getAll: getAll,
   getNote: getNote,
-  deleteNote: deleteNote
+  deleteNote: deleteNote,
+  logNote: logNote
 };
